@@ -1,0 +1,39 @@
+language: julia
+os:
+  - linux
+julia:
+  - 1.0
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=true
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'using Pkg; pkg"add BinaryProvider"; pkg"add BinaryBuilder#master"; Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for TeroFrondelius/mgisBuilder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: kwciDklYWrKBbNEl6mbBJEBvNw/M/QmQyfiu/MjlCt/1rPPcyBv6DItb8ieLTUsBGwbAzR28zuHVaUuI2Ibl4H69QzNnomaCGHbrElheb4+3fsYUNd61WNDa4+VI9p3SdgAWUrPXyW98gjeuJAe/tdnghPbYWXyUL2FtBxTXWvtMsKSZ46KuopeLQX68JpAdBi5hbPT1Bdojsb1gceYnO/M3qJSXY5ceyB955FfIUy1WxKxXFmody5S90WW/tLmCDT+yIEyniMwvo4OqbILFNUhOCvz+WDnas4ZSE7BbsHqwYZ0VpFjjzPwbZgSP5RC+t03NmgzzC2aJjsjeT9ytHrzpNsBAJPK2MAB1Pz92kE6T+TRZrqDpGhojIkXxRTAG/tIuTQdfBtbObzIxDkNSG1jeHxSZWa5rhei5vMG61a1WgI4W4Eww9RQNojyi7F7xOzpjJxVH+9ks3nQ3WiQJ79sliuVizohJXRuhn+COal3WzO/hHwiXbGgvLFneEQCn55Be6UY1wU0rc3UQOcNxUk6Y4b/pnp7Z6RkWYOfDg/VVIDRiNa0Xm7qXt0qZQLIrvivlum+oPNwp7QQV6acD95N1g/W5tyStSz7T3ObZ3WBZ5nGrWLqzru682UshdKABTWCoFZPmOvYJmLotUn8SLh3CA99ZX62a8Wk08CgOUcE=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: TeroFrondelius/mgisBuilder
+        tags: true
